@@ -22,7 +22,7 @@ sudo apt-get install -y nodejs
 sudo apt-get install -y build-essential
 ```
 
-## Usage of prexvis
+## Usage of prexvis 
 
 ```bash
 # install used npm packages
