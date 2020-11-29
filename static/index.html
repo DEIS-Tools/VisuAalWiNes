@@ -5,8 +5,8 @@
     <title>AalWiNes - MPLS Reachability Analysis & Visualization Tool</title>
     <script src="js/libs/jquery-3.3.1.min.js"></script>
     <script src="js/libs/Sortable-1.10.2.min.js"></script>
-    <script src="https://unpkg.com/deck.gl@^8.0.0/dist.min.js"></script>
-    <script src="https://api.tiles.mapbox.com/mapbox-gl-js/v1.4.0/mapbox-gl.js"></script>
+    <script src="https://unpkg.com/deck.gl@^8.3.9/dist.min.js"></script>
+    <script src="https://api.tiles.mapbox.com/mapbox-gl-js/v1.13.0/mapbox-gl.js"></script>
     <script src="js/libs/socket.io.js" type="text/javascript"></script>
     <script src="js/comm.js" type="text/javascript"></script>
     <script src="js/arrowarclayer.js" type="text/javascript"></script>
@@ -14,7 +14,7 @@
     <script src="js/model.js" type="text/javascript"></script>
     <script src="js/weight.js" type="text/javascript"></script>
     <script src="js/main.js" type="text/javascript"></script>
-    <link rel="stylesheet" type="text/css" href="https://api.tiles.mapbox.com/mapbox-gl-js/v1.4.0/mapbox-gl.css" />
+    <link rel="stylesheet" type="text/css" href="https://api.tiles.mapbox.com/mapbox-gl-js/v1.13.0/mapbox-gl.css" />
     <link rel="stylesheet" type="text/css" href="css/style.css" />
 </head>
 <body>
@@ -40,6 +40,17 @@
                 </p>
                 <input class='run' type='submit' value='Load Model'/>
             </form>
+            <p>
+                <input type="file" id="file-selector" accept=".json">
+            </p>
+            <p>
+                <input id='upload' type='button' value='Load Queries into Current Model'/>
+                <input id='uploadall' type='button' value='Upload Model'/>
+            </p>
+            <p>
+                <input id='download' type='button' value='Download Saved Queries For Current Model'/>
+                <input id='downloadall' type='button' value='Download Current Model & Saved Queries'/>
+            </p>
         </div>
     </div>
 
@@ -49,8 +60,11 @@
         <div class='inner-container'>
             <form enctype="multipart/form-data" method="post">
                 <p></p>
-                <div id="query-examples">
+                <div id="savedQueries">
                 </div>
+                <p>
+                    <input id='save-query' type='button' value='Save Query'/>
+                </p>
                 <p>
                     <table>
                         <tr title="Regular expression over MPLS-labels that defines the label-stack of the packet in the beginning of the route.">
@@ -68,6 +82,10 @@
                         <tr title="A maximum number of failed links that are allowed in order to enable the routing sequence.">
                             <td><label for='linkFailures'>Max link failures: </label></td>
                             <td><input type='text' id='linkFailures' name='linkFailures' value='0'/></td>
+                        </tr>
+                        <tr title="A textual description of the query.">
+                            <td><label for='description'>Description: </label></td>
+                            <td><input type='text' id='description' name='description' value=''/></td>
                         </tr>
                     </table>
                 </p>
@@ -222,8 +240,9 @@
                         <li>University of Vienna<br />&nbsp;<a href="https://ct.cs.univie.ac.at/">Communication Technologies Group</a>
                         </li>
                     </ul>
-                    Have a look at the <a href="https://aalwines.cs.aau.dk/">Tool Website</a> & <br />
-                    <a href="https://github.com/DEIS-Tools/AalWiNes">Tool and query language documentation</a>
+                    Have a look at the <a href="https://aalwines.cs.aau.dk/">Tool Website</a>, <br />
+                    <a href="https://github.com/DEIS-Tools/AalWiNes">Tool and query language documentation</a> and <br />
+                    <a href="https://youtu.be/nnBDa3-_g7o">the CoNEXT2020 presentation video.</a>
                 </p>
                 <div id="video_placeholder">AalWiNes Quick Intro</div>
             </div>

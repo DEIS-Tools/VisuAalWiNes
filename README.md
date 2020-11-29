@@ -59,21 +59,21 @@ npm run pack
 
 The delivery package including aalwines, moped, sample data and the visuaalwines binary is in:
 
-`./visuaalwines-0.2.0.tgz`
+`./visuaalwines-0.3.0.tgz`
 
 Beside the visuaalwines tool it includes everything necessary to run it: nodejs, aalwines, moped and sample data.
 
 Unpack it, run the binary and use your browser to go to http://localhost:3000/
 
 ```bash
-tar -xzvf visuaalwines-0.2.0.tgz
-cd visuaalwines-0.2.0
+tar -xzvf visuaalwines-0.3.0.tgz
+cd visuaalwines-0.3.0
 ./visuaalwines
 
 # browse to http://localhost:3000/
 ```
 
-Own sample data can be added in the directory `data/models`.
+Own sample data can be added in the directory `data/models` or via the web interface.
 
 ## Optional Requirements
 
