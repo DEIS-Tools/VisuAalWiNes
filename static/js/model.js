@@ -143,9 +143,9 @@ function uploadFile(toServer) {
                 socket.emit("uploadModel", content);
             } else {
                 const queries = content.queries;
-                const savedQueries = JSON.parse(localStorage.getItem("savedQueries2") ?? "{}");
+                const savedQueries = JSON.parse(localStorage.getItem("savedQueries3") ?? "{}");
                 savedQueries[selected_model] = queries;
-                localStorage.setItem("savedQueries2", JSON.stringify(savedQueries));
+                localStorage.setItem("savedQueries3", JSON.stringify(savedQueries));
                 show_savedQueries(selected_model);
             }
         });
@@ -288,18 +288,9 @@ function model_fillGps(data) {
 }
 
 function convert_queries(modelName, queryExamples) {
-    const savedQueries2 = JSON.parse(localStorage.getItem("savedQueries2") ?? "{}");
-    const savedQueries2ForModel = savedQueries2[modelName];
-    if (savedQueries2ForModel) {
-        return;
-    }
-
-    const savedQueries1 = JSON.parse(localStorage.getItem("savedQueries") ?? "{}");
-    const savedQueries1ForModel = savedQueries1[modelName];
-    if (savedQueries1ForModel) {
-        const newQueries = Object.entries(savedQueries1ForModel).map(([key, value]) => ({...value, description: key}));
-        savedQueries2[modelName] = newQueries;
-        localStorage.setItem("savedQueries2", JSON.stringify(savedQueries2));
+    const savedQueries3 = JSON.parse(localStorage.getItem("savedQueries3") ?? "{}");
+    const savedQueries3ForModel = savedQueries3[modelName];
+    if (savedQueries3ForModel) {
         return;
     }
 
@@ -320,8 +311,8 @@ function convert_queries(modelName, queryExamples) {
                 weights: example.weight ?? null
             };
         });
-        savedQueries2[modelName] = newQueries;
-        localStorage.setItem("savedQueries2", JSON.stringify(savedQueries2));
+        savedQueries3[modelName] = newQueries;
+        localStorage.setItem("savedQueries3", JSON.stringify(savedQueries3));
     }
 }
 
@@ -351,13 +342,13 @@ function show_savedQueries(modelName) {
 }
 
 function get_saved_queries(modelName) {
-    const savedQueries = JSON.parse(localStorage.getItem("savedQueries2") ?? "{}");
+    const savedQueries = JSON.parse(localStorage.getItem("savedQueries3") ?? "{}");
     const savedQueriesForModel = savedQueries[modelName] ?? (savedQueries[modelName] = []);
     return savedQueriesForModel;
 }
 
 function save_query(modelName) {
-    let savedQueries = JSON.parse(localStorage.getItem("savedQueries2") ?? "{}");
+    let savedQueries = JSON.parse(localStorage.getItem("savedQueries3") ?? "{}");
     let savedQueriesForModel = savedQueries[modelName] ?? (savedQueries[modelName] = []);
 
     const data = {
@@ -373,13 +364,13 @@ function save_query(modelName) {
     };
     savedQueriesForModel.push(data);
 
-    localStorage.setItem("savedQueries2", JSON.stringify(savedQueries));
+    localStorage.setItem("savedQueries3", JSON.stringify(savedQueries));
 
     show_savedQueries(modelName);
 }
 
 function load_query(modelName, queryIx) {
-    const savedQueries = JSON.parse(localStorage.getItem("savedQueries2") ?? "{}");
+    const savedQueries = JSON.parse(localStorage.getItem("savedQueries3") ?? "{}");
     const savedQueriesForModel = savedQueries[modelName] ?? (savedQueries[modelName] = []);
     const savedQuery = savedQueriesForModel[queryIx];
     if (savedQuery) {
@@ -399,10 +390,10 @@ function load_query(modelName, queryIx) {
 }
 
 function delete_query(modelName, queryIx) {
-    let savedQueries = JSON.parse(localStorage.getItem("savedQueries2") ?? "{}");
+    let savedQueries = JSON.parse(localStorage.getItem("savedQueries3") ?? "{}");
     let savedQueriesForModel = savedQueries[modelName] ?? (savedQueries[modelName] = []);
     savedQueriesForModel.splice(queryIx, 1);
-    localStorage.setItem("savedQueries2", JSON.stringify(savedQueries));
+    localStorage.setItem("savedQueries3", JSON.stringify(savedQueries));
     show_savedQueries(modelName);
 }
 
