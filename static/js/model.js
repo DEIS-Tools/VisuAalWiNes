@@ -11,7 +11,7 @@ function model_init() {
     $("#model_selection form").submit(function (e) {
         e.preventDefault();
         selected_model = $("#model").val();
-        $("#model_selection .subheader").text(selected_model);        
+        $("#model_selection .subheader").text(selected_model);
         $("#preCondition").val('.');
         $("#path").val('.*');
         $("#postCondition").val('.');
@@ -66,7 +66,7 @@ function model_init() {
     $("#run-validation").click(function (e) {
         e.preventDefault();
         var query = $("#final_query").text();
-        query += ' ' + $("#sim-mode").val();
+        query += ' OVER';
         $("#result_query_string").text('');
         result_data = null;
         $("#queryresult").text('');
@@ -77,11 +77,11 @@ function model_init() {
         var options = {};
         var weight = getWeightList();
         if (weight) {
-            // Weight is only implemented for engine 2: "Post*"
-            $("#engine").val(2);
+            // Weight is only implemented for engine 1: "Post*"
+            $("#engine").val(1);
             options = { ...options, weight };
         }
-        options = { ...options, engine: $("#engine").val(), reduction: $("#reduction").val() };
+        options = { ...options, engine: $("#engine").val() };
         socket.emit('doQuery', selected_model, query, options);
         //$("#query_entry").children(".expand-icon").click();
     });
@@ -143,9 +143,9 @@ function uploadFile(toServer) {
                 socket.emit("uploadModel", content);
             } else {
                 const queries = content.queries;
-                const savedQueries = JSON.parse(localStorage.getItem("savedQueries2") ?? "{}");
+                const savedQueries = JSON.parse(localStorage.getItem("savedQueries3") ?? "{}");
                 savedQueries[selected_model] = queries;
-                localStorage.setItem("savedQueries2", JSON.stringify(savedQueries));
+                localStorage.setItem("savedQueries3", JSON.stringify(savedQueries));
                 show_savedQueries(selected_model);
             }
         });
@@ -196,7 +196,7 @@ function load_model_afterUpload(data) {
         $("#model_selection").children(".expand-icon").click();
         if ($("#query_entry").children(".expand-icon").text() == '+') {
             $("#query_entry").children(".expand-icon").click();
-        }        
+        }
         load_model(data);
     } else {
         if ($("#query_result").children(".expand-icon").text() == '+') {
@@ -256,7 +256,7 @@ function model_fillGps(data) {
             data.routers[routerName].lat = data.minLat + Math.floor(i / squareSideCount) * dlat;
             data.routers[routerName].lng = data.minLng + Math.floor(i % squareSideCount) * dlon;
         }
-    );
+        );
     // Check for duplicate locations and move them away
     const usedLocations = new Map();
     Object.keys(data.routers)
@@ -275,7 +275,7 @@ function model_fillGps(data) {
                 usedLats.add(data.routers[routerName].lat);
             }
         }
-    );
+        );
     // Get real coordinate range for view
     Object.keys(data.routers)
         .forEach((routerName) => {
@@ -284,22 +284,13 @@ function model_fillGps(data) {
             data.minLng = Math.min(data.routers[routerName].lng, data.minLng);
             data.maxLng = Math.max(data.routers[routerName].lng, data.maxLng);
         }
-    );
+        );
 }
 
 function convert_queries(modelName, queryExamples) {
-    const savedQueries2 = JSON.parse(localStorage.getItem("savedQueries2") ?? "{}");
-    const savedQueries2ForModel = savedQueries2[modelName];
-    if (savedQueries2ForModel) {
-        return;
-    }
-
-    const savedQueries1 = JSON.parse(localStorage.getItem("savedQueries") ?? "{}");
-    const savedQueries1ForModel = savedQueries1[modelName];
-    if (savedQueries1ForModel) {
-        const newQueries = Object.entries(savedQueries1ForModel).map(([key, value]) => ({...value, description: key}));
-        savedQueries2[modelName] = newQueries;
-        localStorage.setItem("savedQueries2", JSON.stringify(savedQueries2));
+    const savedQueries3 = JSON.parse(localStorage.getItem("savedQueries3") ?? "{}");
+    const savedQueries3ForModel = savedQueries3[modelName];
+    if (savedQueries3ForModel) {
         return;
     }
 
@@ -316,14 +307,12 @@ function convert_queries(modelName, queryExamples) {
                 postCondition: example.postCondition ?? query_parts?.[3] ?? "",
                 linkFailures: example.linkFailures ?? query_parts?.[4] ?? "",
 
-                engine: example.engine ?? "2",
-                sim_mode: example.sim_mode ?? "DUAL",
-                reduction: example.reduction ?? "3",
+                engine: example.engine ?? "1",
                 weights: example.weight ?? null
             };
         });
-        savedQueries2[modelName] = newQueries;
-        localStorage.setItem("savedQueries2", JSON.stringify(savedQueries2));
+        savedQueries3[modelName] = newQueries;
+        localStorage.setItem("savedQueries3", JSON.stringify(savedQueries3));
     }
 }
 
@@ -349,17 +338,17 @@ function show_savedQueries(modelName) {
                 )
             );
         });
-    }  
+    }
 }
 
 function get_saved_queries(modelName) {
-    const savedQueries = JSON.parse(localStorage.getItem("savedQueries2") ?? "{}");
+    const savedQueries = JSON.parse(localStorage.getItem("savedQueries3") ?? "{}");
     const savedQueriesForModel = savedQueries[modelName] ?? (savedQueries[modelName] = []);
     return savedQueriesForModel;
 }
 
 function save_query(modelName) {
-    let savedQueries = JSON.parse(localStorage.getItem("savedQueries2") ?? "{}");
+    let savedQueries = JSON.parse(localStorage.getItem("savedQueries3") ?? "{}");
     let savedQueriesForModel = savedQueries[modelName] ?? (savedQueries[modelName] = []);
 
     const data = {
@@ -370,20 +359,18 @@ function save_query(modelName) {
         description: $("#description").val(),
 
         engine: $("#engine").val(),
-        sim_mode: $("#sim-mode").val(),
-        reduction: $("#reduction").val(),
 
         weights: getWeightList()
     };
     savedQueriesForModel.push(data);
 
-    localStorage.setItem("savedQueries2", JSON.stringify(savedQueries));
+    localStorage.setItem("savedQueries3", JSON.stringify(savedQueries));
 
     show_savedQueries(modelName);
 }
 
 function load_query(modelName, queryIx) {
-    const savedQueries = JSON.parse(localStorage.getItem("savedQueries2") ?? "{}");
+    const savedQueries = JSON.parse(localStorage.getItem("savedQueries3") ?? "{}");
     const savedQueriesForModel = savedQueries[modelName] ?? (savedQueries[modelName] = []);
     const savedQuery = savedQueriesForModel[queryIx];
     if (savedQuery) {
@@ -393,8 +380,6 @@ function load_query(modelName, queryIx) {
         $("#linkFailures").val(savedQuery.linkFailures);
 
         $("#engine").val(savedQuery.engine);
-        $("#sim-mode").val(savedQuery.sim_mode);
-        $("#reduction").val(savedQuery.reduction);
 
         $("#description").val(savedQuery.description);
 
@@ -405,10 +390,10 @@ function load_query(modelName, queryIx) {
 }
 
 function delete_query(modelName, queryIx) {
-    let savedQueries = JSON.parse(localStorage.getItem("savedQueries2") ?? "{}");
+    let savedQueries = JSON.parse(localStorage.getItem("savedQueries3") ?? "{}");
     let savedQueriesForModel = savedQueries[modelName] ?? (savedQueries[modelName] = []);
     savedQueriesForModel.splice(queryIx, 1);
-    localStorage.setItem("savedQueries2", JSON.stringify(savedQueries));
+    localStorage.setItem("savedQueries3", JSON.stringify(savedQueries));
     show_savedQueries(modelName);
 }
 
@@ -476,26 +461,26 @@ function set_router_list_interface(routerName, ifName) {
 function show_label_list(labels) {
     $("#router_list_labels").empty();
     $("#router_list_labels").append(
-        $("<li class='router_list_label' id='router_list_label_ip' onclick='set_router_list_label(\"ip\")'>ip</li>"));
+        $("<li class='router_list_label' id='router_list_label_.' onclick='set_router_list_label(\".\", false)'>.</li>"));
     $("#router_list_labels").append(
-        $("<li class='router_list_label' id='router_list_label_mpls' onclick='set_router_list_label(\"mpls\")'>mpls</li>"));
+        $("<li class='router_list_label' id='router_list_label_.+' onclick='set_router_list_label(\".+\", false)'>.+</li>"));
     $("#router_list_labels").append(
-        $("<li class='router_list_label' id='router_list_label_smpls' onclick='set_router_list_label(\"smpls\")'>smpls</li>"));
+        $("<li class='router_list_label' id='router_list_label_.*' onclick='set_router_list_label(\".*\", false)'>.*</li>"));
     $("#router_list_labels").append(
-        labels.filter((labelName) => !["ip", "mpls", "smpls"].includes(labelName))
-        .sort().map((labelName) =>
-        $("<li class='router_list_label' id='router_list_label_" + labelName + "' onclick='set_router_list_label(\"" + labelName + "\")'>" + labelName + "</li>")));
-    set_router_list_label("ip");
+        labels.filter((labelName) => ![".", ".+", ".*"].includes(labelName))
+            .sort().map((labelName) =>
+                $("<li class='router_list_label' id='router_list_label_" + labelName + "' onclick='set_router_list_label(\"" + labelName + "\", true)'>" + labelName + "</li>")));
+    set_router_list_label(".", false);
 }
 
-function set_router_list_label(labelName) {
+function set_router_list_label(labelName, quote) {
     $('.router_list_label').removeClass('selected');
-    $('#router_list_label_' + labelName.replace(/(:|\.|\[|\]|,|=|@|\/)/g, "\\$1")).addClass('selected');
+    $('#router_list_label_' + labelName.replace(/(:|\.|\[|\]|,|\*|=|@|\/)/g, "\\$1")).addClass('selected');
     $("#add-label-to-header").prop('disabled', false).off('click').click(e => {
-        insert_in_textarea(labelTarget, quote_if_necessary(labelName));
+        insert_in_textarea(labelTarget, quote ? quote_if_necessary(labelName) : labelName);
     });
     $("#copy-label-to-clipboard").prop('disabled', false).off('click').click(e => {
-        copy_to_clipboard(quote_if_necessary(labelName));
+        copy_to_clipboard(quote ? quote_if_necessary(labelName) : labelName);
     });
 }
 
@@ -534,9 +519,9 @@ function add_models(models) {
 
 function calc_finalQuery(preCondition, path, postCondition, linkFailures) {
     return '<' + preCondition + '> ' +
-    path +
-    ' <' + postCondition + '> ' +
-    linkFailures;
+        path +
+        ' <' + postCondition + '> ' +
+        linkFailures;
 }
 
 function show_finalQuery() {
@@ -594,7 +579,7 @@ function show_queryResult(data) {
                     if (entry.rule.ops) {
                         entry.rule.ops.forEach(op => {
                             result += '<tr onclick="set_current_step(' + (step - 1) + ')"><td class="rule">&nbsp;&nbsp;&nbsp;' +
-                            (typeof op === 'string' ? op + '()' : Object.keys(op).map(key => key + '(' + op[key] + ')').join('; '))
+                                (typeof op === 'string' ? op + '()' : Object.keys(op).map(key => key + '(' + op[key] + ')').join('; '))
                             ')</td></tr>';
                         });
                     }
