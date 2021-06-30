@@ -137,6 +137,14 @@ function map_init() {
         deckgl.setProps({viewState: currentViewState});
     });
 
+    $("#view-map").click(function () {
+        view_map = $("#view-map").prop('checked');    
+        const map = deckgl.getMapboxMap();
+        map.getStyle().layers.forEach(layer => {
+            map.setLayoutProperty(layer.id, "visibility", view_map ? "visible" : "none");
+        });
+    });
+
     document.addEventListener('keydown', function(ev) {
         if (ev.key == "ArrowDown") {
             set_current_step(Math.min(current_step_target + 1, usedEdgesCount + 1));
