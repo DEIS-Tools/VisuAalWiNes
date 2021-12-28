@@ -10,4 +10,4 @@ node_modules/
 # large data files
 !/data/models/
 /data/models/*
-!/data/models/>DemoNet<
+!/data/models/_DemoNet_
