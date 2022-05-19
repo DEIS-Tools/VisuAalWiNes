@@ -77,11 +77,13 @@ function model_init() {
         var options = {};
         var weight = getWeightList();
         if (weight) {
-            // Weight is only implemented for engine 1: "Post*"
-            $("#engine").val(1);
+            // Weight is only implemented for engine 1: "Post*" -- not anymore
+            // $("#engine").val(1);
             options = { ...options, weight };
+        } else {
+            $("#trace").val(1); // Cannot do shortest or longest trace if no weight is specified.
         }
-        options = { ...options, engine: $("#engine").val() };
+        options = { ...options, engine: $("#engine").val(), trace: $("#trace").val() };
         socket.emit('doQuery', selected_model, query, options);
         //$("#query_entry").children(".expand-icon").click();
     });
@@ -308,6 +310,7 @@ function convert_queries(modelName, queryExamples) {
                 linkFailures: example.linkFailures ?? query_parts?.[4] ?? "",
 
                 engine: example.engine ?? "1",
+                trace: example.trace ?? "1",
                 weights: example.weight ?? null
             };
         });
@@ -359,6 +362,7 @@ function save_query(modelName) {
         description: $("#description").val(),
 
         engine: $("#engine").val(),
+        trace: $("#trace").val(),
 
         weights: getWeightList()
     };
@@ -380,6 +384,7 @@ function load_query(modelName, queryIx) {
         $("#linkFailures").val(savedQuery.linkFailures);
 
         $("#engine").val(savedQuery.engine);
+        $("#trace").val(savedQuery.trace ?? 1);
 
         $("#description").val(savedQuery.description);
 
