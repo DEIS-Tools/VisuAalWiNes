@@ -179,9 +179,9 @@ class Models {
             await fsp.writeFile(tmpQueryFile, query);
             let parameters;
             if (definitionFile) {
-                parameters = ['--input', definitionFile, '-e', options.engine, '-t', '-q', tmpQueryFile];
+                parameters = ['--input', definitionFile, '-e', options.engine, '-t', options.trace, '-q', tmpQueryFile];
             } else {
-                parameters = ['--topology', topologyFile, '--routing', routingFile, '-e', options.engine, '-t', '-q', tmpQueryFile];
+                parameters = ['--topology', topologyFile, '--routing', routingFile, '-e', options.engine, '-t', options.trace, '-q', tmpQueryFile];
             }
             await tmp.withFile(async ({ path: tmpWeightFile }) => {
                 if (options.weight) {
